@@ -6,11 +6,24 @@ import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
+import InventoryTable from "@/components/inventory/inventory-table";
 
 export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
+      <h1 className={title({ size: "lg" })}>Inventory Tracker</h1>
+
+      <p className={subtitle({ class: "text-center" })}>
+        A simple <Code color="secondary">Inventory tracker</Code> built with
+        Next.js, TypeScript, and HeroUI.
+      </p>
+      <InventoryTable />
+    </section>
+  );
+}
+
+{
+  /* <div className="inline-block max-w-xl text-center justify-center">
         <span className={title()}>Make&nbsp;</span>
         <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
         <br />
@@ -50,7 +63,5 @@ export default function Home() {
             Get started by editing <Code color="primary">app/page.tsx</Code>
           </span>
         </Snippet>
-      </div>
-    </section>
-  );
+      </div> */
 }
