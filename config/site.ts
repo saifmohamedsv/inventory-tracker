@@ -60,10 +60,10 @@ export const siteConfig = {
     },
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
-    twitter: "https://twitter.com/hero_ui",
+    github: "https://github.com/saifmohamedsv",
+    twitter: "https://twitter.com/saifmohamed_swe",
     docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
+    discord: "https://discord.gg/5KN3ArRtXy",
     sponsor: "https://patreon.com/jrgarciadev",
   },
 };
