@@ -1,67 +1,36 @@
-import { Link } from "@heroui/link";
-import { Snippet } from "@heroui/snippet";
-import { Code } from "@heroui/code";
-import { button as buttonStyles } from "@heroui/theme";
+"use client";
 
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
-import InventoryTable from "@/components/inventory/inventory-table";
+import { Button, useDisclosure } from "@heroui/react";
+
+import ProductsTable from "./components/products-table";
+import AddProductModal from "./components/add-product/add-product-modal";
+
+import { PlusIcon } from "@/components/icons";
 
 export default function Home() {
-  return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <h1 className={title({ size: "lg" })}>Inventory Tracker</h1>
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-      <p className={subtitle({ class: "text-center" })}>
-        A simple <Code color="secondary">Inventory tracker</Code> built with
-        Next.js, TypeScript, and HeroUI.
-      </p>
-      <InventoryTable />
+  return (
+    <section className="flex flex-col items-center justify-center gap-4">
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Products</h2>
+          <Button color="primary" startContent={<PlusIcon />} onPress={onOpen}>
+            Add Product
+          </Button>
+        </div>
+        <AddProductModal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          onSuccess={() => {
+            // Refresh the table data
+            const event = new CustomEvent("refresh-table");
+
+            window.dispatchEvent(event);
+          }}
+        />
+        <ProductsTable />
+      </div>
     </section>
   );
-}
-
-{
-  /* <div className="inline-block max-w-xl text-center justify-center">
-        <span className={title()}>Make&nbsp;</span>
-        <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-        <br />
-        <span className={title()}>
-          websites regardless of your design experience.
-        </span>
-        <div className={subtitle({ class: "mt-4" })}>
-          Beautiful, fast and modern React UI library.
-        </div>
-      </div>
-
-      <div className="flex gap-3">
-        <Link
-          isExternal
-          className={buttonStyles({
-            color: "primary",
-            radius: "full",
-            variant: "shadow",
-          })}
-          href={siteConfig.links.docs}
-        >
-          Documentation
-        </Link>
-        <Link
-          isExternal
-          className={buttonStyles({ variant: "bordered", radius: "full" })}
-          href={siteConfig.links.github}
-        >
-          <GithubIcon size={20} />
-          GitHub
-        </Link>
-      </div>
-
-      <div className="mt-8">
-        <Snippet hideCopyButton hideSymbol variant="bordered">
-          <span>
-            Get started by editing <Code color="primary">app/page.tsx</Code>
-          </span>
-        </Snippet>
-      </div> */
 }
