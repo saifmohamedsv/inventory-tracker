@@ -48,7 +48,7 @@ export default function ProductsTable() {
       setProducts(data);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to fetch products"
+        error instanceof Error ? error.message : "Failed to fetch products",
       );
     } finally {
       setIsLoading(false);
@@ -135,11 +135,12 @@ export default function ProductsTable() {
 
       {selectedProduct && (
         <EditProductModal
-          product={selectedProduct}
           isOpen={isOpen}
+          product={selectedProduct}
           onOpenChange={onOpenChange}
           onSuccess={() => {
             const event = new CustomEvent("refresh-table");
+
             window.dispatchEvent(event);
           }}
         />

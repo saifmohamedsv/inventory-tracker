@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(
@@ -45,8 +46,8 @@ export async function PUT(
     });
 
     return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error updating product:", error);
+  } catch {
+    // Log error to your preferred error tracking service
     return NextResponse.json(
       { error: "Error updating product" },
       { status: 500 }

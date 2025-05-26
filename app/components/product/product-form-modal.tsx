@@ -22,7 +22,7 @@ interface ProductFormModalProps {
   onOpenChange?: (isOpen: boolean) => void;
   onSubmit: (
     e: React.FormEvent<HTMLFormElement>,
-    onClose: () => void
+    onClose: () => void,
   ) => Promise<void>;
   title: string;
   submitButtonText: string;
@@ -56,34 +56,35 @@ export default function ProductFormModal({
               {error && <div className="text-danger text-sm mb-4">{error}</div>}
               <Input
                 isRequired
+                defaultValue={initialData?.name}
                 errorMessage="Please enter a product name"
                 label="Product Name"
                 labelPlacement="outside"
                 name="name"
                 placeholder="Enter product name"
-                defaultValue={initialData?.name}
               />
               <Input
                 isRequired
+                defaultValue={initialData?.sku}
                 errorMessage="Please enter a valid SKU"
                 label="SKU"
                 labelPlacement="outside"
                 name="sku"
                 placeholder="Enter SKU"
-                defaultValue={initialData?.sku}
               />
               <Input
                 isRequired
+                defaultValue={initialData?.quantity?.toString()}
                 errorMessage="Please enter a valid quantity"
                 label="Quantity"
                 labelPlacement="outside"
                 name="quantity"
                 placeholder="Enter quantity"
                 type="number"
-                defaultValue={initialData?.quantity?.toString()}
               />
               <Input
                 isRequired
+                defaultValue={initialData?.price?.toString()}
                 errorMessage="Please enter a valid price"
                 label="Price"
                 labelPlacement="outside"
@@ -91,7 +92,6 @@ export default function ProductFormModal({
                 placeholder="Enter price"
                 step="0.01"
                 type="number"
-                defaultValue={initialData?.price?.toString()}
               />
             </ModalBody>
             <ModalFooter>

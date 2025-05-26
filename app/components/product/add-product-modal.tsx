@@ -1,6 +1,7 @@
 "use client";
-import { useProducts } from "@/app/hooks/use-products.hook";
 import ProductFormModal from "./product-form-modal";
+
+import { useProducts } from "@/app/hooks/use-products.hook";
 
 interface Props {
   onSuccess?: () => void;
@@ -17,13 +18,13 @@ export default function AddProductModal({
 
   return (
     <ProductFormModal
+      error={error}
+      isLoading={isLoading}
       isOpen={isOpen}
+      submitButtonText="Save"
+      title="Add New Product"
       onOpenChange={onOpenChange}
       onSubmit={addProduct}
-      title="Add New Product"
-      submitButtonText="Save"
-      isLoading={isLoading}
-      error={error}
     />
   );
 }

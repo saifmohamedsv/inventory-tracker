@@ -91,6 +91,9 @@ export function useProducts({ onSuccess }: UseProductsProps = {}) {
   };
 
   const deleteProductById = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/products?id=${id}`, {

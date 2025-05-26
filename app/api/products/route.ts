@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     if (!name || !sku || quantity === undefined || price === undefined) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     if (existingProduct) {
       return NextResponse.json(
         { error: "Product with this SKU already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,12 +38,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (error) {
-    console.error("Error creating product:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Error creating product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -57,11 +55,10 @@ export async function GET() {
     });
 
     return NextResponse.json(products);
-  } catch (error) {
-    console.error("Error fetching products:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error fetching products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -70,27 +67,23 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    const sku = searchParams.get("sku");
 
-    if (!id && !sku) {
+    if (!id) {
       return NextResponse.json(
-        { error: "Either id or sku is required" },
-        { status: 400 }
+        { error: "Product ID is required" },
+        { status: 400 },
       );
     }
 
-    const where = id ? { id } : { sku: sku! };
-
-    const product = await prisma.product.delete({
-      where,
+    await prisma.product.delete({
+      where: { id },
     });
 
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error deleting product:", error);
+    return NextResponse.json({ message: "Product deleted successfully" });
+  } catch {
     return NextResponse.json(
       { error: "Error deleting product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
