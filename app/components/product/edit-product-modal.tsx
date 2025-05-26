@@ -1,7 +1,7 @@
 "use client";
 import ProductFormModal from "./product-form-modal";
 
-import { useProducts } from "@/app/hooks/use-products.hook";
+import { useProduct } from "@/app/hooks/use-product.hook";
 
 interface Product {
   id: string;
@@ -25,11 +25,13 @@ export default function EditProductModal({
   isOpen,
   onOpenChange,
 }: Props) {
-  const { error, isLoading, updateProduct } = useProducts({ onSuccess });
+  const { error, isLoading, updateProduct } = useProduct({
+    onSuccess,
+  });
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    onClose: () => void,
+    onClose: () => void
   ) => {
     await updateProduct(e, product.id, onClose);
   };

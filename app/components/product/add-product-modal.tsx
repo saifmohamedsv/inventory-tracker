@@ -1,7 +1,7 @@
 "use client";
 import ProductFormModal from "./product-form-modal";
 
-import { useProducts } from "@/app/hooks/use-products.hook";
+import { useProduct } from "@/app/hooks/use-product.hook";
 
 interface Props {
   onSuccess?: () => void;
@@ -14,7 +14,7 @@ export default function AddProductModal({
   isOpen,
   onOpenChange,
 }: Props) {
-  const { error, isLoading, addProduct } = useProducts({ onSuccess });
+  const { error, isLoading, addProduct } = useProduct({ onSuccess });
 
   return (
     <ProductFormModal

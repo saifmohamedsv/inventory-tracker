@@ -1,5 +1,5 @@
 "use client";
-import { Key, useEffect, useState } from "react";
+import { Key, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -13,10 +13,12 @@ import {
 import { Tooltip } from "@heroui/tooltip";
 
 import { useProducts } from "../hooks/use-products.hook";
+import { useProduct } from "../hooks/use-product.hook";
 
 import EditProductModal from "./product/edit-product-modal";
 
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
+import { refreshProductsTable } from "@/lib/products";
 
 interface Product {
   id: string;
@@ -28,45 +30,13 @@ interface Product {
 }
 
 export default function ProductsTable() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { deleteProductById, isDeleting } = useProducts({});
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("/api/products");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-      const data = await response.json();
-
-      setProducts(data);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to fetch products",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-
-    // Add event listener for table refresh
-    const handleRefresh = () => fetchProducts();
-
-    window.addEventListener("refresh-table", handleRefresh);
-
-    return () => {
-      window.removeEventListener("refresh-table", handleRefresh);
-    };
-  }, []);
+  const { products, error, isLoading } = useProducts();
+  const { deleteProductById, isDeleting } = useProduct({
+    onSuccess: refreshProductsTable,
+  });
 
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
@@ -112,12 +82,7 @@ export default function ProductsTable() {
                 color="danger"
                 isLoading={isDeleting}
                 variant="light"
-                onPress={() => {
-                  deleteProductById(product.id);
-                  const event = new CustomEvent("refresh-table");
-
-                  window.dispatchEvent(event);
-                }}
+                onPress={() => deleteProductById(product.id)}
               >
                 <DeleteIcon />
               </Button>
@@ -138,11 +103,7 @@ export default function ProductsTable() {
           isOpen={isOpen}
           product={selectedProduct}
           onOpenChange={onOpenChange}
-          onSuccess={() => {
-            const event = new CustomEvent("refresh-table");
-
-            window.dispatchEvent(event);
-          }}
+          onSuccess={() => refreshProductsTable()}
         />
       )}
 

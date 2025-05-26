@@ -6,6 +6,7 @@ import ProductsTable from "./components/products-table";
 import AddProductModal from "./components/product/add-product-modal";
 
 import { PlusIcon } from "@/components/icons";
+import { refreshProductsTable } from "@/lib/products";
 
 export default function Home() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -22,12 +23,7 @@ export default function Home() {
         <AddProductModal
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          onSuccess={() => {
-            // Refresh the table data
-            const event = new CustomEvent("refresh-table");
-
-            window.dispatchEvent(event);
-          }}
+          onSuccess={() => refreshProductsTable()}
         />
         <ProductsTable />
       </div>

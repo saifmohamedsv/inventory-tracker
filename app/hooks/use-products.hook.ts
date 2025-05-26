@@ -1,125 +1,58 @@
-import { FormEvent, useState } from "react";
+import { useState, useEffect } from "react";
 
-interface UseProductsProps {
-  onSuccess?: () => void;
+interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  createdAt: string;
 }
 
-export function useProducts({ onSuccess }: UseProductsProps = {}) {
+interface Props {}
+
+export function useProducts({}: Props = {}) {
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const addProduct = async (
-    e: FormEvent<HTMLFormElement>,
-    onClose: () => void
-  ) => {
-    e.preventDefault();
-    setError("");
+  const fetchProducts = async () => {
     setIsLoading(true);
-
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = {
-        name: formData.get("name"),
-        sku: formData.get("sku"),
-        quantity: formData.get("quantity"),
-        price: formData.get("price"),
-      };
-
-      const response = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
+      const response = await fetch("/api/products");
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to create product");
+        throw new Error("Failed to fetch products");
       }
 
-      onClose();
-      onSuccess?.();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateProduct = async (
-    e: React.FormEvent<HTMLFormElement>,
-    id: string,
-    onClose: () => void
-  ) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData(e.currentTarget);
-      const data = {
-        name: formData.get("name"),
-        sku: formData.get("sku"),
-        quantity: formData.get("quantity"),
-        price: formData.get("price"),
-      };
-
-      const response = await fetch(`/api/products/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to update product");
-      }
-
-      onClose();
-      onSuccess?.();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteProductById = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) {
-      return;
-    }
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`/api/products?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
-      }
-
-      onSuccess?.();
+      const data = await response.json();
+      setProducts(data);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to delete product"
+        error instanceof Error ? error.message : "Failed to fetch products"
       );
     } finally {
-      setIsDeleting(false);
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchProducts();
+
+    // Add event listener for table refresh
+    const handleRefresh = () => fetchProducts();
+
+    window.addEventListener("refresh-table", handleRefresh);
+
+    return () => {
+      window.removeEventListener("refresh-table", handleRefresh);
+    };
+  }, []);
+
   return {
+    products,
     error,
     isLoading,
-    isDeleting,
-    addProduct,
-    updateProduct,
-    deleteProductById,
+    fetchProducts,
   };
 }
