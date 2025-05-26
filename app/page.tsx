@@ -3,7 +3,7 @@
 import { Button, useDisclosure } from "@heroui/react";
 
 import ProductsTable from "./components/products-table";
-import AddProductModal from "./components/add-product/add-product-modal";
+import AddProductModal from "./components/product/add-product-modal";
 
 import { PlusIcon } from "@/components/icons";
 

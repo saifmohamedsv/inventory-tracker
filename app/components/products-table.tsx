@@ -13,6 +13,7 @@ import {
 import { Tooltip } from "@heroui/tooltip";
 
 import { useProducts } from "../hooks/use-products.hook";
+
 import EditProductModal from "./product/edit-product-modal";
 
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
@@ -111,7 +112,12 @@ export default function ProductsTable() {
                 color="danger"
                 isLoading={isDeleting}
                 variant="light"
-                onPress={() => deleteProductById(product.id)}
+                onPress={() => {
+                  deleteProductById(product.id);
+                  const event = new CustomEvent("refresh-table");
+
+                  window.dispatchEvent(event);
+                }}
               >
                 <DeleteIcon />
               </Button>

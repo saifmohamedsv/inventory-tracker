@@ -91,10 +91,6 @@ export function useProducts({ onSuccess }: UseProductsProps = {}) {
   };
 
   const deleteProductById = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) {
-      return;
-    }
-
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/products?id=${id}`, {
@@ -105,10 +101,7 @@ export function useProducts({ onSuccess }: UseProductsProps = {}) {
         throw new Error("Failed to delete product");
       }
 
-      // Refresh the table
-      const event = new CustomEvent("refresh-table");
-
-      window.dispatchEvent(event);
+      onSuccess?.();
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Failed to delete product"
