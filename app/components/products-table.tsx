@@ -9,6 +9,7 @@ import {
   TableCell,
   Button,
   useDisclosure,
+  Pagination,
 } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
 
@@ -33,7 +34,8 @@ export default function ProductsTable() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { products, error, isLoading } = useProducts();
+  const { products, error, isLoading, pagination, handlePageChange } =
+    useProducts();
 
   const { deleteProductById, isDeleting } = useProduct({
     onSuccess: refreshProductsTable,
@@ -96,7 +98,7 @@ export default function ProductsTable() {
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       {error && <div className="text-danger text-sm mb-4">{error}</div>}
 
       {selectedProduct && (
@@ -128,6 +130,19 @@ export default function ProductsTable() {
           )}
         </TableBody>
       </Table>
+
+      <div className="flex justify-center">
+        <Pagination
+          showControls
+          classNames={{
+            cursor: "bg-primary",
+          }}
+          initialPage={2}
+          page={pagination.page}
+          total={pagination.totalPages}
+          onChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 }
