@@ -31,7 +31,7 @@ export default function EditProductModal({
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    onClose: () => void
+    onClose: () => void,
   ) => {
     await updateProduct(e, product.id, onClose);
   };

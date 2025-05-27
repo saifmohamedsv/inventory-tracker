@@ -1,14 +1,8 @@
 "use client";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Form,
-} from "@heroui/react";
+import { FormEvent } from "react";
+import { Button, Input } from "@heroui/react";
+
+import SharedModal from "../shared/modal";
 
 interface ProductFormData {
   name: string;
@@ -17,94 +11,107 @@ interface ProductFormData {
   price: number;
 }
 
-interface ProductFormModalProps {
+interface Props {
+  error?: string;
+  isLoading?: boolean;
   isOpen?: boolean;
+  initialData?: ProductFormData;
+  submitButtonText?: string;
+  title: string;
   onOpenChange?: (isOpen: boolean) => void;
   onSubmit: (
-    e: React.FormEvent<HTMLFormElement>,
+    e: FormEvent<HTMLFormElement>,
     onClose: () => void,
   ) => Promise<void>;
-  title: string;
-  submitButtonText: string;
-  isLoading?: boolean;
-  error?: string;
-  initialData?: Partial<ProductFormData>;
 }
 
 export default function ProductFormModal({
+  error,
+  isLoading,
   isOpen,
+  initialData,
+  submitButtonText = "Submit",
+  title,
   onOpenChange,
   onSubmit,
-  title,
-  submitButtonText,
-  isLoading,
-  error,
-  initialData,
-}: ProductFormModalProps) {
+}: Props) {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    await onSubmit(e, () => onOpenChange?.(false));
+  };
+
+  const footer = (
+    <div className="flex justify-end gap-2">
+      <Button
+        color="danger"
+        variant="light"
+        onPress={() => onOpenChange?.(false)}
+      >
+        Cancel
+      </Button>
+      <Button
+        color="primary"
+        form="product-form"
+        isLoading={isLoading}
+        type="submit"
+      >
+        {submitButtonText}
+      </Button>
+    </div>
+  );
+
   return (
-    <Modal
-      backdrop="blur"
+    <SharedModal
+      footer={footer}
       isOpen={isOpen}
-      placement="center"
+      title={title}
       onOpenChange={onOpenChange}
     >
-      <ModalContent>
-        {(onClose) => (
-          <Form className="space-y-4" onSubmit={(e) => onSubmit(e, onClose)}>
-            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-            <ModalBody className="w-full">
-              {error && <div className="text-danger text-sm mb-4">{error}</div>}
-              <Input
-                isRequired
-                defaultValue={initialData?.name}
-                errorMessage="Please enter a product name"
-                label="Product Name"
-                labelPlacement="outside"
-                name="name"
-                placeholder="Enter product name"
-              />
-              <Input
-                isRequired
-                defaultValue={initialData?.sku}
-                errorMessage="Please enter a valid SKU"
-                label="SKU"
-                labelPlacement="outside"
-                name="sku"
-                placeholder="Enter SKU"
-              />
-              <Input
-                isRequired
-                defaultValue={initialData?.quantity?.toString()}
-                errorMessage="Please enter a valid quantity"
-                label="Quantity"
-                labelPlacement="outside"
-                name="quantity"
-                placeholder="Enter quantity"
-                type="number"
-              />
-              <Input
-                isRequired
-                defaultValue={initialData?.price?.toString()}
-                errorMessage="Please enter a valid price"
-                label="Price"
-                labelPlacement="outside"
-                name="price"
-                placeholder="Enter price"
-                step="0.01"
-                type="number"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="flat" onPress={onClose}>
-                Cancel
-              </Button>
-              <Button color="primary" isLoading={isLoading} type="submit">
-                {submitButtonText}
-              </Button>
-            </ModalFooter>
-          </Form>
-        )}
-      </ModalContent>
-    </Modal>
+      <form className="space-y-4" id="product-form" onSubmit={handleSubmit}>
+        {error && <div className="text-danger text-sm">{error}</div>}
+
+        <div className="space-y-2">
+          <Input
+            isRequired
+            defaultValue={initialData?.name}
+            label="Name"
+            name="name"
+            placeholder="Enter product name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Input
+            isRequired
+            defaultValue={initialData?.sku}
+            label="SKU"
+            name="sku"
+            placeholder="Enter product SKU"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Input
+            isRequired
+            defaultValue={initialData?.quantity?.toString()}
+            label="Quantity"
+            name="quantity"
+            placeholder="Enter product quantity"
+            type="number"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Input
+            isRequired
+            defaultValue={initialData?.price?.toString()}
+            label="Price"
+            name="price"
+            placeholder="Enter product price"
+            step="0.01"
+            type="number"
+          />
+        </div>
+      </form>
+    </SharedModal>
   );
 }

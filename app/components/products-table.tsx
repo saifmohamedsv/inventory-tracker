@@ -34,6 +34,7 @@ export default function ProductsTable() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { products, error, isLoading } = useProducts();
+
   const { deleteProductById, isDeleting } = useProduct({
     onSuccess: refreshProductsTable,
   });
