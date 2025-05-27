@@ -26,10 +26,11 @@ export function useProducts({}: Props = {}) {
       }
 
       const data = await response.json();
+
       setProducts(data);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to fetch products"
+        error instanceof Error ? error.message : "Failed to fetch products",
       );
     } finally {
       setIsLoading(false);

@@ -11,7 +11,7 @@ export function useProduct({ onSuccess }: Props = {}) {
 
   const addProduct = async (
     e: FormEvent<HTMLFormElement>,
-    onClose: () => void
+    onClose: () => void,
   ) => {
     e.preventDefault();
     setError("");
@@ -52,7 +52,7 @@ export function useProduct({ onSuccess }: Props = {}) {
   const updateProduct = async (
     e: React.FormEvent<HTMLFormElement>,
     id: string,
-    onClose: () => void
+    onClose: () => void,
   ) => {
     e.preventDefault();
     setError("");
@@ -107,7 +107,7 @@ export function useProduct({ onSuccess }: Props = {}) {
       onSuccess?.();
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to delete product"
+        error instanceof Error ? error.message : "Failed to delete product",
       );
     } finally {
       setIsDeleting(false);
