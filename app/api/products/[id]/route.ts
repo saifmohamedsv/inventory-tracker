@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const body = await request.json();
@@ -15,7 +15,7 @@ export async function PUT(
     if (!name || !sku || quantity === undefined || price === undefined) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function PUT(
     if (existingProduct) {
       return NextResponse.json(
         { error: "Product with this SKU already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,7 +50,7 @@ export async function PUT(
     // Log error to your preferred error tracking service
     return NextResponse.json(
       { error: "Error updating product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
