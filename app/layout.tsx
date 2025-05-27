@@ -15,8 +15,62 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  keywords: [
+    "inventory management",
+    "stock tracking",
+    "business tools",
+    "Saif Mohamed",
+  ],
+  authors: [
+    {
+      name: "Saif Mohamed",
+      url: "https://saifmohamedsv.vercel.app",
+    },
+  ],
+  creator: "Saif Mohamed",
+  publisher: "Saif Mohamed",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://inventory-tracker.vercel.app",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Inventory Tracker by Saif Mohamed",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    creator: "@saifmohamed_swe",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  verification: {
+    google: "your-google-site-verification",
   },
 };
 
@@ -38,7 +92,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
