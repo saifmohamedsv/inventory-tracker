@@ -44,7 +44,6 @@ export function useProducts({}: Props = {}) {
       }
 
       const data: ProductsResponse = await response.json();
-
       setProducts(data.products);
       setPagination(data.pagination);
     } catch (error) {
@@ -61,11 +60,11 @@ export function useProducts({}: Props = {}) {
   };
 
   useEffect(() => {
-    fetchProducts();
+    // Always start with page 1 on initial load
+    fetchProducts(1);
 
     // Add event listener for table refresh
-    const handleRefresh = () =>
-      fetchProducts(pagination.page, pagination.limit);
+    const handleRefresh = () => fetchProducts(1);
 
     window.addEventListener("refresh-table", handleRefresh);
 

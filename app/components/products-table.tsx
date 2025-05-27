@@ -137,7 +137,7 @@ export default function ProductsTable() {
           classNames={{
             cursor: "bg-primary",
           }}
-          initialPage={2}
+          initialPage={pagination.page}
           page={pagination.page}
           total={pagination.totalPages}
           onChange={handlePageChange}
