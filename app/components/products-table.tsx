@@ -17,6 +17,7 @@ import { useProducts } from "../hooks/use-products.hook";
 import { useProduct } from "../hooks/use-product.hook";
 
 import EditProductModal from "./product/edit-product-modal";
+import ProductDetailsModal from "./product/product-details-modal";
 
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import { refreshProductsTable } from "@/lib/products";
@@ -32,7 +33,16 @@ interface Product {
 
 export default function ProductsTable() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onOpenChange: onEditOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isDetailsOpen,
+    onOpen: onDetailsOpen,
+    onOpenChange: onDetailsOpenChange,
+  } = useDisclosure();
 
   const { products, error, isLoading, pagination, handlePageChange } =
     useProducts();
@@ -43,7 +53,12 @@ export default function ProductsTable() {
 
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
-    onOpen();
+    onEditOpen();
+  };
+
+  const handleViewDetails = (product: Product) => {
+    setSelectedProduct(product);
+    onDetailsOpen();
   };
 
   const columns = [
@@ -65,14 +80,19 @@ export default function ProductsTable() {
         return (
           <div className="relative flex items-center">
             <Tooltip content="View Details">
-              <Button isIconOnly className="text-default-400" variant="light">
+              <Button
+                isIconOnly
+                className="text-default-400 text-lg"
+                variant="light"
+                onPress={() => handleViewDetails(product)}
+              >
                 <EyeIcon />
               </Button>
             </Tooltip>
             <Tooltip content="Edit Product">
               <Button
                 isIconOnly
-                className="text-default-400"
+                className="text-default-400 text-lg"
                 variant="light"
                 onPress={() => handleEdit(product)}
               >
@@ -82,6 +102,7 @@ export default function ProductsTable() {
             <Tooltip color="danger" content="Delete Product">
               <Button
                 isIconOnly
+                className="text-lg"
                 color="danger"
                 isLoading={isDeleting}
                 variant="light"
@@ -102,12 +123,19 @@ export default function ProductsTable() {
       {error && <div className="text-danger text-sm mb-4">{error}</div>}
 
       {selectedProduct && (
-        <EditProductModal
-          isOpen={isOpen}
-          product={selectedProduct}
-          onOpenChange={onOpenChange}
-          onSuccess={() => refreshProductsTable()}
-        />
+        <>
+          <EditProductModal
+            isOpen={isEditOpen}
+            product={selectedProduct}
+            onOpenChange={onEditOpenChange}
+            onSuccess={() => refreshProductsTable()}
+          />
+          <ProductDetailsModal
+            isOpen={isDetailsOpen}
+            product={selectedProduct}
+            onOpenChange={onDetailsOpenChange}
+          />
+        </>
       )}
 
       <Table aria-label="Products table">
@@ -134,10 +162,7 @@ export default function ProductsTable() {
       <div className="flex justify-center">
         <Pagination
           showControls
-          classNames={{
-            cursor: "bg-primary",
-          }}
-          initialPage={pagination.page}
+          initialPage={1}
           page={pagination.page}
           total={pagination.totalPages}
           onChange={handlePageChange}
