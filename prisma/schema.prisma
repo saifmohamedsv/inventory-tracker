@@ -16,7 +16,25 @@ model Product {
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  sales     SaleItem[]
 
   @@map("products")
+}
+
+model Sale {
+  id        String     @id @default(cuid()) @map("_id")
+  createdAt DateTime   @default(now())
+  total     Float
+  items     SaleItem[]
+}
+
+model SaleItem {
+  id        String   @id @default(cuid()) @map("_id")
+  sale      Sale     @relation(fields: [saleId], references: [id])
+  saleId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Float
 }
 
