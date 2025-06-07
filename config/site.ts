@@ -9,7 +9,10 @@ export const siteConfig = {
     url: "https://saifmohamedsv.vercel.app",
     twitter: "@saifmohamed_swe",
   },
-  navItems: [{ href: "/", label: "" }],
+  navItems: [
+    { href: "/", label: "Inventory" },
+    { href: "/pos", label: "POS" },
+  ],
   navMenuItems: [
     {
       label: "Logout",
