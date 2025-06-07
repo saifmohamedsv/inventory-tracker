@@ -1,3 +1,4 @@
+"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -10,6 +11,7 @@ import {
 import { Link } from "@heroui/link";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
@@ -17,6 +19,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { GithubIcon, DiscordIcon, Logo } from "@/components/icons";
 
 export const Navbar = () => {
+  const pathname = usePathname();
+
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -32,7 +36,8 @@ export const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  pathname === item.href &&
+                    "text-primary font-bold text-lg border-b-2 border-primary pb-1"
                 )}
                 color="foreground"
                 href={item.href}
