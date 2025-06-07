@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@heroui/input";
-import { addToast, Button, Card,  } from "@heroui/react";
+import { addToast, Button, Card, Select, SelectItem } from "@heroui/react";
 
 import { useProducts } from "../hooks/use-products.hook";
+import { useCategories } from "../hooks/use-categories.hook";
 
 import { refreshProductsTable } from "@/lib/products";
 import { Product } from "@/types";
@@ -16,14 +17,17 @@ interface CartItem {
 
 export default function POSPage() {
   const { products } = useProducts();
+  const { categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const filteredProducts = products?.filter(
     (product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchQuery.toLowerCase())
+      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.sku.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (!selectedCategory || product.category?.id === selectedCategory)
   );
 
   const addToCart = (product: Product) => {
@@ -53,7 +57,6 @@ export default function POSPage() {
   const updateQuantity = (productId: string, quantity: number) => {
     if (quantity < 1) {
       removeFromCart(productId);
-
       return;
     }
     setCart((prevCart) =>
@@ -82,7 +85,6 @@ export default function POSPage() {
 
       if (!response.ok) {
         const error = await response.json();
-
         throw new Error(error.error || "Failed to process checkout");
       }
 
@@ -116,14 +118,31 @@ export default function POSPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Product Selection */}
         <div className="md:col-span-2">
-          <div className="relative mb-4">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="flex gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                className="pl-8"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Select
+              className="w-48"
+              placeholder="Filter by category"
+              selectedKeys={selectedCategory ? [selectedCategory] : []}
+              onSelectionChange={(keys) =>
+                setSelectedCategory(Array.from(keys)[0] as string)
+              }
+            >
+              {[
+                <SelectItem key="all">All Categories</SelectItem>,
+                ...categories.map((category) => (
+                  <SelectItem key={category.id}>{category.name}</SelectItem>
+                )),
+              ]}
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -133,6 +152,11 @@ export default function POSPage() {
                 <p className="text-sm text-muted-foreground">
                   SKU: {product.sku}
                 </p>
+                {product.category && (
+                  <p className="text-sm text-muted-foreground">
+                    Category: {product.category.name}
+                  </p>
+                )}
                 <p className="font-bold mt-2">${product.price.toFixed(2)}</p>
                 <p className="text-sm">Stock: {product.quantity}</p>
                 <Button
@@ -149,7 +173,7 @@ export default function POSPage() {
 
         {/* Cart */}
         <div className="bg-card rounded-lg p-4">
-          <h2 className="text-xl font-bold mb-4">Cart</h2>
+          <h2 className="text-xl font-semibold mb-4">Cart</h2>
           {cart.length === 0 ? (
             <p className="text-muted-foreground">Cart is empty</p>
           ) : (
@@ -163,13 +187,13 @@ export default function POSPage() {
                     <div>
                       <p className="font-medium">{item.product.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        ${item.product.price.toFixed(2)}
+                        ${item.product.price.toFixed(2)} x {item.quantity}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
                         size="sm"
-                        variant="bordered"
+                        variant="ghost"
                         onPress={() =>
                           updateQuantity(item.product.id, item.quantity - 1)
                         }
@@ -178,9 +202,8 @@ export default function POSPage() {
                       </Button>
                       <span>{item.quantity}</span>
                       <Button
-                        disabled={item.quantity >= item.product.quantity}
                         size="sm"
-                        variant="bordered"
+                        variant="ghost"
                         onPress={() =>
                           updateQuantity(item.product.id, item.quantity + 1)
                         }
@@ -192,16 +215,16 @@ export default function POSPage() {
                 ))}
               </div>
               <div className="mt-4 pt-4 border-t">
-                <div className="flex justify-between font-bold">
+                <div className="flex justify-between font-semibold">
                   <span>Total:</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
                 <Button
                   className="w-full mt-4"
-                  disabled={isCheckingOut || cart.length === 0}
+                  isLoading={isCheckingOut}
                   onPress={handleCheckout}
                 >
-                  {isCheckingOut ? "Processing..." : "Checkout"}
+                  Checkout
                 </Button>
               </div>
             </>
