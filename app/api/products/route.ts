@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, sku, quantity, price } = body;
+    const { name, sku, quantity, price, categoryId } = body;
 
     // Validate required fields
     if (!name || !sku || quantity === undefined || price === undefined) {
@@ -34,6 +34,10 @@ export async function POST(request: Request) {
         sku,
         quantity: parseInt(quantity),
         price: parseFloat(price),
+        categoryId: categoryId || null,
+      },
+      include: {
+        category: true,
       },
     });
 
@@ -51,15 +55,23 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const categoryId = searchParams.get("categoryId");
     const skip = (page - 1) * limit;
 
+    // Build where clause
+    const where = categoryId ? { categoryId } : {};
+
     // Get total count of products
-    const total = await prisma.product.count();
+    const total = await prisma.product.count({ where });
 
     // Get paginated products
     const products = await prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+      },
       orderBy: {
-        sku: "asc",
+        createdAt: "desc",
       },
       skip,
       take: limit,

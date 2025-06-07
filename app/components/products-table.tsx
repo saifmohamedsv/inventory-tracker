@@ -1,5 +1,5 @@
 "use client";
-import { Key, useState } from "react";
+import { Key, useState, ReactNode } from "react";
 import {
   Table,
   TableHeader,
@@ -10,11 +10,14 @@ import {
   Button,
   useDisclosure,
   Pagination,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
 
 import { useProducts } from "../hooks/use-products.hook";
 import { useProduct } from "../hooks/use-product.hook";
+import { useCategories } from "../hooks/use-categories.hook";
 
 import EditProductModal from "./product/edit-product-modal";
 import ProductDetailsModal from "./product/product-details-modal";
@@ -29,10 +32,15 @@ interface Product {
   quantity: number;
   price: number;
   createdAt: string;
+  category?: {
+    id: string;
+    name: string;
+  };
 }
 
 export default function ProductsTable() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
@@ -44,8 +52,15 @@ export default function ProductsTable() {
     onOpenChange: onDetailsOpenChange,
   } = useDisclosure();
 
-  const { products, error, isLoading, pagination, handlePageChange } =
-    useProducts();
+  const {
+    products,
+    error,
+    isLoading,
+    pagination,
+    handlePageChange,
+    fetchProducts,
+  } = useProducts({ selectedCategory });
+  const { categories } = useCategories();
 
   const { deleteProductById, isDeleting } = useProduct({
     onSuccess: refreshProductsTable,
@@ -61,21 +76,29 @@ export default function ProductsTable() {
     onDetailsOpen();
   };
 
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    fetchProducts(1, pagination.limit, categoryId);
+  };
+
   const columns = [
     { name: "NAME", uid: "name" },
     { name: "SKU", uid: "sku" },
+    { name: "CATEGORY", uid: "category" },
     { name: "QUANTITY", uid: "quantity" },
     { name: "PRICE", uid: "price" },
     { name: "CREATED AT", uid: "createdAt" },
     { name: "ACTIONS", uid: "actions" },
   ];
 
-  const renderCell = (product: Product, columnKey: Key) => {
+  const renderCell = (product: Product, columnKey: Key): ReactNode => {
     switch (columnKey) {
       case "price":
         return `$${product.price.toFixed(2)}`;
       case "createdAt":
         return new Date(product.createdAt).toLocaleDateString();
+      case "category":
+        return product.category?.name || "Uncategorized";
       case "actions":
         return (
           <div className="relative flex items-center">
@@ -114,13 +137,31 @@ export default function ProductsTable() {
           </div>
         );
       default:
-        return product[columnKey as keyof Product];
+        return String(product[columnKey as keyof Product] ?? "");
     }
   };
 
   return (
     <div className="space-y-4">
       {error && <div className="text-danger text-sm mb-4">{error}</div>}
+
+      <div className="flex justify-end mb-4">
+        <Select
+          className="max-w-xs"
+          placeholder="Filter by category"
+          selectedKeys={selectedCategory ? [selectedCategory] : []}
+          onSelectionChange={(keys) =>
+            handleCategoryChange(Array.from(keys)[0] as string)
+          }
+          items={[{ id: "", name: "All Categories" }, ...categories]}
+        >
+          {(category) => (
+            <SelectItem key={category.id} textValue={category.name}>
+              {category.name}
+            </SelectItem>
+          )}
+        </Select>
+      </div>
 
       {selectedProduct && (
         <>
@@ -152,7 +193,9 @@ export default function ProductsTable() {
           {(product) => (
             <TableRow key={product.id}>
               {(columnKey) => (
-                <TableCell>{renderCell(product, columnKey)}</TableCell>
+                <TableCell>
+                  {renderCell(product, columnKey as keyof Product)}
+                </TableCell>
               )}
             </TableRow>
           )}

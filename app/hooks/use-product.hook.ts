@@ -11,7 +11,7 @@ export function useProduct({ onSuccess }: Props = {}) {
 
   const addProduct = async (
     e: FormEvent<HTMLFormElement>,
-    onClose: () => void,
+    onClose: () => void
   ) => {
     e.preventDefault();
     setError("");
@@ -24,6 +24,7 @@ export function useProduct({ onSuccess }: Props = {}) {
         sku: formData.get("sku"),
         quantity: formData.get("quantity"),
         price: formData.get("price"),
+        categoryId: formData.get("categoryId"),
       };
 
       const response = await fetch("/api/products", {
@@ -52,7 +53,7 @@ export function useProduct({ onSuccess }: Props = {}) {
   const updateProduct = async (
     e: React.FormEvent<HTMLFormElement>,
     id: string,
-    onClose: () => void,
+    onClose: () => void
   ) => {
     e.preventDefault();
     setError("");
@@ -65,6 +66,7 @@ export function useProduct({ onSuccess }: Props = {}) {
         sku: formData.get("sku"),
         quantity: formData.get("quantity"),
         price: formData.get("price"),
+        categoryId: formData.get("categoryId"),
       };
 
       const response = await fetch(`/api/products/${id}`, {
@@ -107,7 +109,7 @@ export function useProduct({ onSuccess }: Props = {}) {
       onSuccess?.();
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to delete product",
+        error instanceof Error ? error.message : "Failed to delete product"
       );
     } finally {
       setIsDeleting(false);

@@ -8,7 +8,7 @@ export async function PUT(request: NextRequest, ctx: any) {
     // get the search params from request.
     const params = ctx.params as { id: string };
     const { id } = params;
-    const { name, sku, quantity, price } = body;
+    const { name, sku, quantity, price, categoryId } = body;
 
     // Validate required fields
     if (!name || !sku || quantity === undefined || price === undefined) {
@@ -41,6 +41,10 @@ export async function PUT(request: NextRequest, ctx: any) {
         sku,
         quantity: parseInt(quantity),
         price: parseFloat(price),
+        categoryId: categoryId || null,
+      },
+      include: {
+        category: true,
       },
     });
 

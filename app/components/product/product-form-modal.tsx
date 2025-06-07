@@ -1,14 +1,16 @@
 "use client";
 import { FormEvent } from "react";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Select, SelectItem } from "@heroui/react";
 
 import SharedModal from "../shared/modal";
+import { useCategories } from "@/app/hooks/use-categories.hook";
 
 interface ProductFormData {
   name: string;
   sku: string;
   quantity: number;
   price: number;
+  categoryId?: string;
 }
 
 interface Props {
@@ -21,7 +23,7 @@ interface Props {
   onOpenChange?: (isOpen: boolean) => void;
   onSubmit: (
     e: FormEvent<HTMLFormElement>,
-    onClose: () => void,
+    onClose: () => void
   ) => Promise<void>;
 }
 
@@ -35,6 +37,8 @@ export default function ProductFormModal({
   onOpenChange,
   onSubmit,
 }: Props) {
+  const { categories, isLoading: isLoadingCategories } = useCategories();
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     await onSubmit(e, () => onOpenChange?.(false));
   };
@@ -110,6 +114,23 @@ export default function ProductFormModal({
             step="0.01"
             type="number"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Select
+            defaultSelectedKeys={
+              initialData?.categoryId ? [initialData.categoryId] : []
+            }
+            label="Category"
+            name="categoryId"
+            placeholder="Select a category"
+          >
+            {categories.map((category) => (
+              <SelectItem key={category.id} textValue={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </Select>
         </div>
       </form>
     </SharedModal>

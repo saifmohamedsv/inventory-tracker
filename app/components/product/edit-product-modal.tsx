@@ -10,6 +10,7 @@ interface Product {
   quantity: number;
   price: number;
   createdAt: string;
+  category?: { id: string };
 }
 
 interface Props {
@@ -31,7 +32,7 @@ export default function EditProductModal({
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    onClose: () => void,
+    onClose: () => void
   ) => {
     await updateProduct(e, product.id, onClose);
   };
@@ -44,6 +45,7 @@ export default function EditProductModal({
         sku: product.sku,
         quantity: product.quantity,
         price: product.price,
+        categoryId: product.category?.id,
       }}
       isLoading={isLoading}
       isOpen={isOpen}

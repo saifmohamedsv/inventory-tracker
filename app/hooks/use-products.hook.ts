@@ -7,6 +7,10 @@ interface Product {
   quantity: number;
   price: number;
   createdAt: string;
+  category?: {
+    id: string;
+    name: string;
+  };
 }
 
 interface PaginationInfo {
@@ -21,9 +25,11 @@ interface ProductsResponse {
   pagination: PaginationInfo;
 }
 
-interface Props {}
+interface Props {
+  selectedCategory?: string;
+}
 
-export function useProducts({}: Props = {}) {
+export function useProducts({ selectedCategory }: Props = {}) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,10 +40,16 @@ export function useProducts({}: Props = {}) {
     totalPages: 0,
   });
 
-  const fetchProducts = async (page = 1, limit = 10) => {
+  const fetchProducts = async (page = 1, limit = 10, categoryId?: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/products?page=${page}&limit=${limit}`);
+      const url = new URL("/api/products", window.location.origin);
+      url.searchParams.set("page", page.toString());
+      url.searchParams.set("limit", limit.toString());
+      if (categoryId) {
+        url.searchParams.set("categoryId", categoryId);
+      }
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -56,7 +68,7 @@ export function useProducts({}: Props = {}) {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchProducts(newPage, pagination.limit);
+    fetchProducts(newPage, pagination.limit, selectedCategory);
   };
 
   useEffect(() => {
